@@ -217,6 +217,22 @@ if stock_file and sales_file:
 
         st.dataframe(sp_df, use_container_width=True)
 
+        st.subheader("Sales vs Purchases Scatter Plot")
+        fig_scatter = px.scatter(
+            sp_df,
+            x="Sales",
+            y="Purchases",
+            text="Month",
+            size=[20] * len(sp_df),
+            color="Month",
+            trendline="ols",
+            title="Sales vs Purchases — Scatter Plot",
+            labels={"Sales": "Sales (GHS)", "Purchases": "Purchases (GHS)"},
+        )
+        fig_scatter.update_traces(textposition="top center")
+        fig_scatter.update_layout(showlegend=False)
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
     with tab6:
         st.subheader("Sales Forecast (Linear Regression)")
 
