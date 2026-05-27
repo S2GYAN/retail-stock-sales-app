@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Retail Stock & Sales Automation App", layout="wide")
 
@@ -111,7 +112,7 @@ if stock_file and sales_file:
     st.divider()
 
     # Tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report", "Sales vs Purchases"])
 
     with tab1:
         st.subheader("Sales Dashboard")
@@ -187,6 +188,32 @@ if stock_file and sales_file:
             file_name="reorder_report.csv",
             mime="text/csv"
         )
+
+    with tab5:
+        st.subheader("Sales vs Purchases Overview")
+
+        sp_df = pd.DataFrame({
+            "Month": ["Month 1", "Month 2", "Month 3", "Month 4"],
+            "Sales": [2000, 3000, 4000, 5000],
+            "Purchases": [1500, 2500, 3500, 4500],
+        })
+
+        fig_sp = go.Figure()
+        fig_sp.add_trace(go.Bar(name="Sales", x=sp_df["Month"], y=sp_df["Sales"], marker_color="steelblue"))
+        fig_sp.add_trace(go.Bar(name="Purchases", x=sp_df["Month"], y=sp_df["Purchases"], marker_color="coral"))
+        fig_sp.update_layout(
+            barmode="group",
+            title="Monthly Sales vs Purchases",
+            xaxis_title="Month",
+            yaxis_title="Amount (GHS)",
+        )
+        st.plotly_chart(fig_sp, use_container_width=True)
+
+        sp_df["Profit"] = sp_df["Sales"] - sp_df["Purchases"]
+        fig_profit = px.line(sp_df, x="Month", y="Profit", markers=True, title="Monthly Profit (Sales − Purchases)")
+        st.plotly_chart(fig_profit, use_container_width=True)
+
+        st.dataframe(sp_df, use_container_width=True)
 
 else:
     st.info("Please upload both stock and sales files to begin.")
