@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
 st.set_page_config(page_title="Retail Stock & Sales Automation App", layout="wide")
 
@@ -112,7 +114,7 @@ if stock_file and sales_file:
     st.divider()
 
     # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report", "Sales vs Purchases"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report", "Sales vs Purchases", "Sales Forecast"])
 
     with tab1:
         st.subheader("Sales Dashboard")
@@ -214,6 +216,52 @@ if stock_file and sales_file:
         st.plotly_chart(fig_profit, use_container_width=True)
 
         st.dataframe(sp_df, use_container_width=True)
+
+    with tab6:
+        st.subheader("Sales Forecast (Linear Regression)")
+
+        sp_df = pd.DataFrame({
+            "Month": [1, 2, 3, 4],
+            "Sales": [2000, 3000, 4000, 5000],
+        })
+
+        X_train = sp_df[["Month"]].values
+        y_train = sp_df["Sales"].values
+
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+
+        forecast_periods = st.slider("Months to forecast ahead", min_value=1, max_value=12, value=4)
+        future_months = np.arange(5, 5 + forecast_periods).reshape(-1, 1)
+        future_sales = model.predict(future_months)
+
+        forecast_df = pd.DataFrame({
+            "Month": future_months.flatten(),
+            "Forecasted Sales (GHS)": future_sales.round(2),
+        })
+
+        fig_forecast = go.Figure()
+        fig_forecast.add_trace(go.Scatter(
+            x=sp_df["Month"], y=sp_df["Sales"],
+            mode="lines+markers", name="Actual Sales", line=dict(color="steelblue")
+        ))
+        fig_forecast.add_trace(go.Scatter(
+            x=forecast_df["Month"], y=forecast_df["Forecasted Sales (GHS)"],
+            mode="lines+markers", name="Forecasted Sales",
+            line=dict(color="orange", dash="dash")
+        ))
+        fig_forecast.update_layout(
+            title="Sales Forecast",
+            xaxis_title="Month",
+            yaxis_title="Sales (GHS)",
+        )
+        st.plotly_chart(fig_forecast, use_container_width=True)
+
+        st.markdown(f"**Model:** Linear Regression &nbsp;|&nbsp; **Slope:** GHS {model.coef_[0]:,.0f}/month &nbsp;|&nbsp; **R²:** {model.score(X_train, y_train):.4f}")
+        st.dataframe(forecast_df, use_container_width=True)
+
+        csv_forecast = forecast_df.to_csv(index=False).encode("utf-8")
+        st.download_button("Download Forecast", csv_forecast, "sales_forecast.csv", "text/csv")
 
 else:
     st.info("Please upload both stock and sales files to begin.")
