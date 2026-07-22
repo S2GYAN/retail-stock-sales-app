@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
 st.set_page_config(page_title="Retail Stock & Sales Automation App", layout="wide")
 
@@ -111,7 +114,7 @@ if stock_file and sales_file:
     st.divider()
 
     # Tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Dashboard", "Inventory", "Alerts", "Reorder Report", "Sales vs Purchases", "Sales Forecast"])
 
     with tab1:
         st.subheader("Sales Dashboard")
@@ -187,6 +190,94 @@ if stock_file and sales_file:
             file_name="reorder_report.csv",
             mime="text/csv"
         )
+
+    with tab5:
+        st.subheader("Sales vs Purchases Overview")
+
+        sp_df = pd.DataFrame({
+            "Month": ["Month 1", "Month 2", "Month 3", "Month 4"],
+            "Sales": [2000, 3000, 4000, 5000],
+            "Purchases": [1500, 2500, 3500, 4500],
+        })
+
+        fig_sp = go.Figure()
+        fig_sp.add_trace(go.Bar(name="Sales", x=sp_df["Month"], y=sp_df["Sales"], marker_color="steelblue"))
+        fig_sp.add_trace(go.Bar(name="Purchases", x=sp_df["Month"], y=sp_df["Purchases"], marker_color="coral"))
+        fig_sp.update_layout(
+            barmode="group",
+            title="Monthly Sales vs Purchases",
+            xaxis_title="Month",
+            yaxis_title="Amount (GHS)",
+        )
+        st.plotly_chart(fig_sp, use_container_width=True)
+
+        sp_df["Profit"] = sp_df["Sales"] - sp_df["Purchases"]
+        fig_profit = px.line(sp_df, x="Month", y="Profit", markers=True, title="Monthly Profit (Sales − Purchases)")
+        st.plotly_chart(fig_profit, use_container_width=True)
+
+        st.dataframe(sp_df, use_container_width=True)
+
+        st.subheader("Sales vs Purchases Scatter Plot")
+        fig_scatter = px.scatter(
+            sp_df,
+            x="Sales",
+            y="Purchases",
+            text="Month",
+            size=[20] * len(sp_df),
+            color="Month",
+            trendline="ols",
+            title="Sales vs Purchases — Scatter Plot",
+            labels={"Sales": "Sales (GHS)", "Purchases": "Purchases (GHS)"},
+        )
+        fig_scatter.update_traces(textposition="top center")
+        fig_scatter.update_layout(showlegend=False)
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+    with tab6:
+        st.subheader("Sales Forecast (Linear Regression)")
+
+        sp_df = pd.DataFrame({
+            "Month": [1, 2, 3, 4],
+            "Sales": [2000, 3000, 4000, 5000],
+        })
+
+        X_train = sp_df[["Month"]].values
+        y_train = sp_df["Sales"].values
+
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+
+        forecast_periods = st.slider("Months to forecast ahead", min_value=1, max_value=12, value=4)
+        future_months = np.arange(5, 5 + forecast_periods).reshape(-1, 1)
+        future_sales = model.predict(future_months)
+
+        forecast_df = pd.DataFrame({
+            "Month": future_months.flatten(),
+            "Forecasted Sales (GHS)": future_sales.round(2),
+        })
+
+        fig_forecast = go.Figure()
+        fig_forecast.add_trace(go.Scatter(
+            x=sp_df["Month"], y=sp_df["Sales"],
+            mode="lines+markers", name="Actual Sales", line=dict(color="steelblue")
+        ))
+        fig_forecast.add_trace(go.Scatter(
+            x=forecast_df["Month"], y=forecast_df["Forecasted Sales (GHS)"],
+            mode="lines+markers", name="Forecasted Sales",
+            line=dict(color="orange", dash="dash")
+        ))
+        fig_forecast.update_layout(
+            title="Sales Forecast",
+            xaxis_title="Month",
+            yaxis_title="Sales (GHS)",
+        )
+        st.plotly_chart(fig_forecast, use_container_width=True)
+
+        st.markdown(f"**Model:** Linear Regression &nbsp;|&nbsp; **Slope:** GHS {model.coef_[0]:,.0f}/month &nbsp;|&nbsp; **R²:** {model.score(X_train, y_train):.4f}")
+        st.dataframe(forecast_df, use_container_width=True)
+
+        csv_forecast = forecast_df.to_csv(index=False).encode("utf-8")
+        st.download_button("Download Forecast", csv_forecast, "sales_forecast.csv", "text/csv")
 
 else:
     st.info("Please upload both stock and sales files to begin.")
