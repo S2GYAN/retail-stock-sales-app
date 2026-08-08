@@ -6,7 +6,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import MonthlySummaryScreen from '../screens/MonthlySummaryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import TransactionsScreen from '../screens/TransactionsScreen';
-import { colors } from '../theme/theme';
+import { ecg } from '../theme/theme';
 import { RootTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -27,16 +27,37 @@ const TAB_LABELS: Record<keyof RootTabParamList, string> = {
   Settings: 'Settings',
 };
 
+const SCREEN_TITLES: Record<keyof RootTabParamList, string> = {
+  Dashboard: 'Dashboard',
+  DailyEntry: 'Daily Entry',
+  Transactions: 'Transactions',
+  MonthlySummary: 'Monthly Summary',
+  Settings: 'Settings',
+};
+
 export default function RootNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textMuted,
+        title: SCREEN_TITLES[route.name],
+        // ECG livery lives on the chrome only; screen backgrounds stay neutral
+        // so figures keep their contrast and the WHT/balance accents keep
+        // their meaning.
+        headerStyle: {
+          backgroundColor: ecg.blue,
+          // A gold rule under the header, the one place the second brand
+          // colour carries weight.
+          borderBottomWidth: 3,
+          borderBottomColor: ecg.gold,
+        },
+        headerTintColor: ecg.onBlue,
+        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        headerShadowVisible: false,
+        tabBarActiveTintColor: ecg.gold,
+        tabBarInactiveTintColor: ecg.onBlueMuted,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          backgroundColor: ecg.blue,
+          borderTopColor: ecg.blueDark,
         },
         tabBarLabel: TAB_LABELS[route.name],
         tabBarIcon: ({ color, size }) => (

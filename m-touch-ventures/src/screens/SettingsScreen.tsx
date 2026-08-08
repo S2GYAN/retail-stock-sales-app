@@ -6,7 +6,7 @@ import FormField from '../components/FormField';
 import PrimaryButton from '../components/PrimaryButton';
 import SectionHeader from '../components/SectionHeader';
 import { useData } from '../context/DataContext';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing } from '../theme/theme';
 import { DEFAULT_SETTINGS } from '../types';
 
 export default function SettingsScreen() {
@@ -81,7 +81,6 @@ export default function SettingsScreen() {
   return (
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Settings</Text>
 
         <Card>
           <SectionHeader title="Business" />
@@ -151,9 +150,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.lg,
     paddingBottom: spacing.xxl,
-  },
-  title: {
-    ...typography.h2,
   },
   savedMessage: {
     marginTop: spacing.sm,

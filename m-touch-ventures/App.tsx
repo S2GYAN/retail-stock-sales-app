@@ -31,7 +31,8 @@ export default function App() {
       <DataProvider>
         <AppShell />
       </DataProvider>
-      <StatusBar style="dark" />
+      {/* The header band is ECG blue, so the status bar sits on dark. */}
+      <StatusBar style="light" />
     </SafeAreaProvider>
   );
 }

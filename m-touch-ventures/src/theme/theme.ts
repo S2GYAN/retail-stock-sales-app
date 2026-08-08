@@ -5,6 +5,23 @@ import { Platform } from 'react-native';
  * Neutral background, one accent for positive/balance figures,
  * a distinct accent for deductions (WHT).
  */
+/**
+ * Electricity Company of Ghana livery, used for chrome only - the header band
+ * and the tab bar - so the vendor's app reads as ECG-adjacent without the
+ * brand colour bleeding into the ledger itself.
+ *
+ * NOTE: these are an approximation of ECG's blue-and-gold identity, not values
+ * taken from an official brand sheet. Swap in the exact hexes here when you
+ * have them; nothing else in the app needs to change.
+ */
+export const ecg = {
+  blue: '#0A4595',
+  blueDark: '#073371',
+  gold: '#F2A900',
+  onBlue: '#FFFFFF',
+  onBlueMuted: 'rgba(255, 255, 255, 0.68)',
+};
+
 export const colors = {
   background: '#F4F5F7',
   surface: '#FFFFFF',
@@ -73,4 +90,4 @@ export const numericStyle: { fontFamily: string | undefined; fontVariant: ('tabu
   fontVariant: ['tabular-nums'],
 };
 
-export default { colors, spacing, radius, fontFamily, typography, numericStyle };
+export default { colors, ecg, spacing, radius, fontFamily, typography, numericStyle };

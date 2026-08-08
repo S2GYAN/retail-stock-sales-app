@@ -8,7 +8,7 @@ import EmptyState from '../components/EmptyState';
 import MonthFilterField from '../components/MonthFilterField';
 import { useData } from '../context/DataContext';
 import { RootTabParamList } from '../navigation/types';
-import { colors, numericStyle, spacing, typography } from '../theme/theme';
+import { colors, numericStyle, spacing } from '../theme/theme';
 import { DerivedEntry } from '../types';
 import { formatDateDisplay } from '../utils/date';
 import { formatGHS } from '../utils/format';
@@ -47,7 +47,6 @@ export default function TransactionsScreen() {
   if (derivedEntries.length === 0) {
     return (
       <View style={styles.screen}>
-        <Text style={styles.title}>Transactions</Text>
         <Card style={styles.emptyCard}>
           <EmptyState
             title="No entries yet"
@@ -63,7 +62,6 @@ export default function TransactionsScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Transactions</Text>
         <MonthFilterField months={months} value={monthFilter} onChange={setMonthFilter} />
       </View>
 
@@ -172,9 +170,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     flexWrap: 'wrap',
     gap: spacing.sm,
-  },
-  title: {
-    ...typography.h2,
   },
   emptyCard: {
     marginHorizontal: spacing.lg,

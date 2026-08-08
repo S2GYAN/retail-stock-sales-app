@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import React, { useMemo } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Card from '../components/Card';
 import EmptyState from '../components/EmptyState';
@@ -19,6 +19,11 @@ import { RootTabParamList } from '../navigation/types';
 export default function DashboardScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList>>();
   const { derivedEntries, settings, currentBalance, entryForDate } = useData();
+
+  // The business is the dashboard's subject, so it names the header band.
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: settings.businessName || 'Dashboard' });
+  }, [navigation, settings.businessName]);
 
   const today = todayISO();
   const todayEntry = useMemo(() => entryForDate(today), [entryForDate, today]);
@@ -74,7 +79,6 @@ export default function DashboardScreen() {
   if (!hasEnoughData) {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.emptyContainer}>
-        <Text style={styles.businessName}>{settings.businessName}</Text>
         <Card>
           <EmptyState
             title="Not enough data yet"
@@ -89,8 +93,6 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.businessName}>{settings.businessName}</Text>
-
       <Card style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>CURRENT FLOAT BALANCE</Text>
         <Text style={[styles.balanceValue, isLowBalance ? styles.balanceValueLow : null]}>
@@ -203,9 +205,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.lg,
     flexGrow: 1,
-  },
-  businessName: {
-    ...typography.h2,
   },
   balanceCard: {
     alignItems: 'flex-start',

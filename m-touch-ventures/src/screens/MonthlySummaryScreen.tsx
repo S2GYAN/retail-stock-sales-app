@@ -6,7 +6,7 @@ import Card from '../components/Card';
 import EmptyState from '../components/EmptyState';
 import { useData } from '../context/DataContext';
 import { RootTabParamList } from '../navigation/types';
-import { colors, numericStyle, spacing, typography } from '../theme/theme';
+import { colors, numericStyle, spacing } from '../theme/theme';
 import { MonthlySummary } from '../types';
 import { currentMonthISO, formatMonthLabel } from '../utils/date';
 import { formatGHS } from '../utils/format';
@@ -32,7 +32,6 @@ export default function MonthlySummaryScreen() {
   if (monthlySummaries.length === 0) {
     return (
       <View style={styles.screen}>
-        <Text style={styles.title}>Monthly Summary</Text>
         <Card style={styles.emptyCard}>
           <EmptyState
             title="No months to summarise yet"
@@ -47,7 +46,6 @@ export default function MonthlySummaryScreen() {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Monthly Summary</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator style={styles.hScroll}>
         <View style={{ width: TABLE_WIDTH }}>
           <TableHeader />
@@ -112,11 +110,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingTop: spacing.lg,
-  },
-  title: {
-    ...typography.h2,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
   },
   emptyCard: {
     marginHorizontal: spacing.lg,

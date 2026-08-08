@@ -85,6 +85,20 @@ disagree about a pesewa.
 Entries and settings are written to AsyncStorage under `@mtouch/entries` and
 `@mtouch/settings`, so state survives app restarts.
 
+## Branding
+
+The header band and tab bar carry ECG's blue-and-gold livery; the screens
+themselves stay on a neutral background so figures keep their contrast and the
+green/red-brown coding for balances and WHT keeps its meaning.
+
+> **The ECG hex values in `src/theme/theme.ts` (`ecg.blue`, `ecg.gold`) are an
+> approximation, not values from an official ECG brand sheet.** Replace them
+> with the exact colours when you have them — they are defined in one place and
+> nothing else needs to change.
+
+This is a private bookkeeping tool for a vendor who resells ECG credit; it is
+not an ECG product and does not claim to be one.
+
 ## Building
 
 `app.json` carries the release identity: bundle identifier and Android package

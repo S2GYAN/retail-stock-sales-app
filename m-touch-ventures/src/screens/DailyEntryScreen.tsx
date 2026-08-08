@@ -1,6 +1,6 @@
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Card from '../components/Card';
 import DatePickerField from '../components/DatePickerField';
@@ -9,7 +9,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import SectionHeader from '../components/SectionHeader';
 import { useData } from '../context/DataContext';
 import { RootTabParamList } from '../navigation/types';
-import { colors, numericStyle, spacing, typography } from '../theme/theme';
+import { colors, numericStyle, spacing } from '../theme/theme';
 import { COMMISSION_RATE, WHT_RATE, round2 } from '../utils/calculations';
 import { todayISO } from '../utils/date';
 import { formatGHS } from '../utils/format';
@@ -24,6 +24,10 @@ export default function DailyEntryScreen() {
   const { entries, settings, derivedEntries, entryForDate, upsertEntry } = useData();
 
   const editingEntry = useMemo(() => entries.find((e) => e.id === editId), [entries, editId]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: editingEntry ? 'Edit Entry' : 'Daily Entry' });
+  }, [navigation, editingEntry]);
 
   const [date, setDate] = useState(editingEntry?.date ?? todayISO());
   const [purchaseText, setPurchaseText] = useState(editingEntry ? String(editingEntry.purchase) : '');
@@ -116,8 +120,6 @@ export default function DailyEntryScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>{editingEntry ? 'Edit Entry' : 'Daily Entry'}</Text>
-
         <Card>
           <DatePickerField label="Date" value={date} onChange={setDate} disableFutureDates />
 
@@ -187,9 +189,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.lg,
     paddingBottom: spacing.xxl,
-  },
-  title: {
-    ...typography.h2,
   },
   notice: {
     backgroundColor: colors.warningBg,
