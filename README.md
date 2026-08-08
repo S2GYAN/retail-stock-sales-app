@@ -1,3 +1,13 @@
+This repository holds two separate projects:
+
+- **Retail Stock & Sales Automation App** — a Streamlit tool, documented below.
+- **[M-Touch Ventures](./m-touch-ventures)** — an Expo (React Native) mobile app
+  for a prepaid electricity (ECG) vendor in Ghana to track daily purchases,
+  sales, commission, and float balance. See
+  [`m-touch-ventures/README.md`](./m-touch-ventures/README.md).
+
+---
+
 # Retail Stock & Sales Automation App
 
 ## Files

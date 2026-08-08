@@ -83,6 +83,18 @@ disagree about a pesewa.
 Entries and settings are written to AsyncStorage under `@mtouch/entries` and
 `@mtouch/settings`, so state survives app restarts.
 
+## Building
+
+`app.json` carries the release identity: bundle identifier and Android package
+`com.mtouchventures.app`, the `mtouchventures` URL scheme, portrait lock, and
+the app icon / adaptive icon / splash screen (a bolt struck through a ledger
+rule, in the accent green). Icons live in `assets/`.
+
+```bash
+npx expo prebuild        # generate native projects
+npx eas build -p android # or -p ios, once you have an EAS account
+```
+
 ## Layout
 
 ```
