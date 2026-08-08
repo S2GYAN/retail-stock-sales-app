@@ -1,3 +1,5 @@
+import { round2 } from './number';
+
 /**
  * Formats a number of Ghanaian cedis as "GH₵ 1,240.50".
  * Negative values are shown as "-GH₵ 1,240.50".
@@ -5,7 +7,9 @@
 export function formatGHS(amount: number): string {
   const safe = Number.isFinite(amount) ? amount : 0;
   const sign = safe < 0 ? '-' : '';
-  const abs = Math.abs(safe);
+  // Round the same way the ledger does before rendering, so a displayed
+  // figure never disagrees with the arithmetic behind it.
+  const abs = round2(Math.abs(safe));
   const [whole, fraction] = abs.toFixed(2).split('.');
   const withSeparators = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return `${sign}GH₵ ${withSeparators}.${fraction}`;

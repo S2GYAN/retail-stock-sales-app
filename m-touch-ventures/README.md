@@ -12,6 +12,9 @@ local user, with everything stored on-device.
 npm install
 npm start        # then press i / a, or scan the QR code with Expo Go
 npm run web      # or run it in a browser
+
+npm test         # unit tests for the calculation, date and currency logic
+npm run typecheck
 ```
 
 ## Data model
@@ -53,7 +56,10 @@ Per calendar month: `totalPurchase`, `totalSales`, `totalCommission`,
 `totalWht`, and `totalNetCommission` are sums over that month's entries;
 `closingBalance` is the balance of the month's last entry by date.
 
-Money is formatted as `GH₵ 1,240.50` throughout.
+Money is formatted as `GH₵ 1,240.50` throughout. Computed figures and
+displayed figures both round through `round2` (`src/utils/number.ts`), which
+corrects for binary floating point, so the ledger and the screen never
+disagree about a pesewa.
 
 ## Screens
 
@@ -90,4 +96,13 @@ src/
   theme/          colors, spacing, tabular-numeral text styles
   types/          Entry, Settings, DerivedEntry, MonthlySummary
   utils/          calculations, date helpers, currency formatting
+    __tests__/    unit tests for the above
 ```
+
+## Tests
+
+`npm test` covers the parts where a quiet mistake would corrupt the books:
+commission and WHT derivation, the running balance across entries (including
+out-of-order input and negative balances), monthly rollups and closing
+balances, the forward-filled chart series, currency formatting and rounding,
+and the date helpers around month, year and leap-day boundaries.

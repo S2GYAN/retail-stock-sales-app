@@ -1,12 +1,10 @@
 import { DerivedEntry, Entry, MonthlySummary } from '../types';
+import { round2 } from './number';
 
 export const COMMISSION_RATE = 0.025;
 export const WHT_RATE = 0.1;
 
-/** Rounds to 2 decimal places, avoiding floating point drift. */
-export function round2(value: number): number {
-  return Math.round((value + Number.EPSILON) * 100) / 100;
-}
+export { round2 };
 
 /**
  * Computes derived figures (commission, wht, netCommission, balance) for every
