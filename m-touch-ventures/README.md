@@ -74,7 +74,9 @@ disagree about a pesewa.
    update an existing entry. Saving navigates to Transactions.
 3. **Transactions** — all entries, most recent first, filterable by month, with
    edit and delete (delete asks for confirmation) per row.
-4. **Monthly Summary** — one row per closed calendar month.
+4. **Monthly Summary** — one row per calendar month, most recent first. The
+   running month is included and tagged "in progress", so its totals and
+   closing balance read as a snapshot rather than a final figure.
 5. **Settings** — business name, opening balance, low-balance threshold, and a
    "Reset all data" action behind a confirmation step.
 

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Card from '../components/Card';
 import EmptyState from '../components/EmptyState';
@@ -27,20 +27,16 @@ export default function MonthlySummaryScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList>>();
   const { monthlySummaries } = useData();
 
-  // A "full" month is one that has already closed - i.e. not the month still in progress.
-  const closedMonths = useMemo(
-    () => monthlySummaries.filter((m) => m.month !== currentMonthISO()),
-    [monthlySummaries]
-  );
+  const thisMonth = currentMonthISO();
 
-  if (closedMonths.length === 0) {
+  if (monthlySummaries.length === 0) {
     return (
       <View style={styles.screen}>
         <Text style={styles.title}>Monthly Summary</Text>
         <Card style={styles.emptyCard}>
           <EmptyState
-            title="No full month of data yet"
-            message="Keep logging daily entries. Once a calendar month closes, its summary will appear here."
+            title="No months to summarise yet"
+            message="Log a daily entry and this month's running totals will appear here."
             actionLabel="Go to Daily Entry"
             onAction={() => navigation.navigate('DailyEntry')}
           />
@@ -56,9 +52,13 @@ export default function MonthlySummaryScreen() {
         <View style={{ width: TABLE_WIDTH }}>
           <TableHeader />
           <FlatList
-            data={closedMonths}
+            data={monthlySummaries}
             keyExtractor={(item) => item.month}
-            renderItem={({ item }) => <SummaryRow summary={item} />}
+            renderItem={({ item }) => (
+              // The running month is still accumulating, so its totals and
+              // closing balance are a snapshot rather than a final figure.
+              <SummaryRow summary={item} inProgress={item.month === thisMonth} />
+            )}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             contentContainerStyle={styles.listContent}
           />
@@ -83,10 +83,13 @@ function TableHeader() {
   );
 }
 
-function SummaryRow({ summary }: { summary: MonthlySummary }) {
+function SummaryRow({ summary, inProgress }: { summary: MonthlySummary; inProgress?: boolean }) {
   return (
     <View style={styles.row}>
-      <Text style={[styles.cell, { width: COLS.month }]}>{formatMonthLabel(summary.month)}</Text>
+      <View style={{ width: COLS.month }}>
+        <Text style={styles.cell}>{formatMonthLabel(summary.month)}</Text>
+        {inProgress ? <Text style={styles.inProgressTag}>In progress</Text> : null}
+      </View>
       <Text style={[styles.cell, styles.numCell, { width: COLS.days }]}>{summary.daysLogged}</Text>
       <Text style={[styles.cell, styles.numCell, { width: COLS.purchases }]}>{formatGHS(summary.totalPurchase)}</Text>
       <Text style={[styles.cell, styles.numCell, { width: COLS.sales }]}>{formatGHS(summary.totalSales)}</Text>
@@ -155,6 +158,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textPrimary,
     ...numericStyle,
+  },
+  inProgressTag: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.textMuted,
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+    marginTop: 2,
   },
   numCell: {
     textAlign: 'right',
